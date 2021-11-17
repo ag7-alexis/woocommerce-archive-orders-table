@@ -414,11 +414,13 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	 * @param WC_Order $order  The order object, passed by reference.
 	 * @param bool     $delete Optional. Whether or not the post meta should be deleted. Default
 	 *                         is false.
+	 * @param bool     $hard_archive Optional. Whether or not the post type should be edit. Default
+	 *                         is false.
 	 *
 	 * @return WP_Error|null A WP_Error object if there was a problem populating the order, or null
 	 *                       if there were no issues.
 	 */
-	public function populate_from_meta( &$order, $delete = false ) {
+	public function populate_from_meta( &$order, $delete = false, $hard_archive = false ) {
 		global $wpdb;
 
 		try {
@@ -426,6 +428,9 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 			$order      = WooCommerce_Custom_Orders_Table::populate_order_from_post_meta( $order );
 
 			$this->update_post_meta( $order );
+			if (true === $hard_archive) {
+				$this->update_post_type($order);
+			}
 		} catch ( WC_Data_Exception $e ) {
 			return new WP_Error( 'woocommerce-custom-order-table-migration', $e->getMessage() );
 		}
@@ -462,5 +467,10 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 				update_post_meta( $order->get_id(), $meta_key, $data[ $column ] );
 			}
 		}
+	}
+
+	private function update_post_type(WC_Order &$order) {
+		$order_archive_types = wc_custom_order_table()->get_archive_table_name();
+		return set_post_type($order->get_id(), $order_archive_types);
 	}
 }

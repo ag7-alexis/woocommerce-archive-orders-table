@@ -245,6 +245,10 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	 * : Preserve the original post meta after a successful migration.
 	 * Default behavior is to clean up post meta.
 	 *
+	 * [--hard-archive]
+	 * : Preserve the original post meta after a successful migration.
+	 * Default behavior is to clean up post meta.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp wc orders-table migrate --batch-size=100 --save-post-meta
@@ -263,6 +267,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 				'batch-size'     => 100,
 				'duration'       => 30,
 				'save-post-meta' => false,
+				'hard-archive'	 => false,
 			)
 		);
 
@@ -313,7 +318,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 					);
 
 				} else {
-					$result = $order->get_data_store()->populate_from_meta( $order, ! $assoc_args['save-post-meta'] );
+					$result = $order->get_data_store()->populate_from_meta( $order, ! $assoc_args['save-post-meta'], $assoc_args['hard-archive'] );
 
 					if ( is_wp_error( $result ) ) {
 						$this->skipped_ids[] = $order_id;
@@ -443,6 +448,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		$processed   = 0;
 
 		while ( $order_query->valid() ) {
+
 			$order = $this->get_order( $order_query->current()->order_id );
 
 			if ( $order ) {
@@ -493,6 +499,13 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		try {
 			$order = wc_get_order( $order_id );
 		} catch ( Exception $e ) {
+			$is_order_archived = wc_custom_order_table()->get_archive_table_name() === get_post_type($order_id);
+			if ($is_order_archived) {
+				$order_types = wc_get_order_types( 'reports' );
+				set_post_type($order_id, $order_types);
+				return $this->get_order($order_id);
+			}
+
 			$order = false;
 			WP_CLI::warning(
 				sprintf(
