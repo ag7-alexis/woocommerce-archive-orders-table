@@ -450,6 +450,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		while ( $order_query->valid() ) {
 
 			$order = $this->get_order( $order_query->current()->order_id );
+			var_dump('ztezt ', $order ? 'true' :'false');
 
 			if ( $order ) {
 				WooCommerce_Custom_Orders_Table::migrate_to_post_meta( $order, $assoc_args['delete-custom-orders'] );
