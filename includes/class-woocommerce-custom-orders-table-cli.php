@@ -566,11 +566,19 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	 */
 	protected function get_archived_order(int $order_id)
 	{
-		$is_order_archived = wc_custom_order_table()->get_archive_post_type_name() === get_post_type($order_id);
+		$is_order_archived    = false;
+		$order_types          = wc_get_order_types('reports');
+		$order_type_effective = null;
+		foreach ($order_types as $order_type) {
+			$order_type_candidate = $order_type . wc_custom_order_table()->get_archive_post_type_name();
+			if (get_post_type($order_id) === $order_type_candidate) {
+				$is_order_archived    = true;
+				$order_type_effective = $order_type_candidate;
+			}
+			break;
+		}
 		if ($is_order_archived) {
-			$order_types = wc_get_order_types('reports');
-			var_dump("zefzf", $order_types);
-			set_post_type($order_id, $order_types);
+			set_post_type($order_id, $order_type_effective);
 			return $this->get_order($order_id);
 		}
 		return false;
