@@ -19,11 +19,11 @@ class WooCommerce_Custom_Orders_Table {
 	protected $table_name = null;
 
 	/**
-	 * The database archive table name.
+	 * The archive post type name.
 	 *
 	 * @var string
 	 */
-	protected $archive_table_name = null;
+	protected $archive_post_type = null;
 
 	/**
 	 * Steps to run on plugin initialization.
@@ -34,7 +34,9 @@ class WooCommerce_Custom_Orders_Table {
 		global $wpdb;
 
 		$this->table_name = $wpdb->prefix . 'woocommerce_orders';
-		$this->archive_table_name = $wpdb->prefix . 'woocommerce_orders_archive';
+		$this->archive_post_type = 'orders_archive';
+
+		register_post_type($this->archive_post_type);
 
 		// Use the plugin's custom data stores for customers and orders.
 		add_filter( 'woocommerce_customer_data_store', __CLASS__ . '::customer_data_store' );
@@ -80,8 +82,8 @@ class WooCommerce_Custom_Orders_Table {
 	 *
 	 * @return string The database archive table name.
 	 */
-	public function get_archive_table_name() {
-		return $this->archive_table_name;
+	public function get_archive_post_type_name() {
+		return $this->archive_post_type;
 	}
 
 	/**

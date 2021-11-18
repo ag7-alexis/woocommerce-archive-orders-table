@@ -470,7 +470,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	}
 
 	private function update_post_type(WC_Order &$order) {
-		$order_archive_types = wc_custom_order_table()->get_archive_table_name();
+		$order_archive_types = wc_custom_order_table()->get_archive_post_type_name();
 		return set_post_type($order->get_id(), $order_archive_types);
 	}
 }
