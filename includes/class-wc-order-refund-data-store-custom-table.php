@@ -179,9 +179,12 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 	{
 		$order_type = $refund->get_type();
 		$order_archive_types = $order_type . wc_custom_order_table()->get_archive_post_type_sufix();
+		var_dump('test', $order_archive_types);
 		if (false === post_type_exists($order_archive_types)) {
 			register_post_type($order_archive_types);
+			var_dump('test2');
 		}
+		var_dump('test3', set_post_type($refund->get_id(), $order_archive_types) ? 'true' : 'false');
 		return set_post_type($refund->get_id(), $order_archive_types);
 	}
 }
