@@ -497,9 +497,11 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	 */
 	protected function get_order( $order_id ) {
 		try {
+			var_dump('get_order', $order_id);
 			$order = wc_get_order( $order_id );
 		} catch ( Exception $e ) {
 			$is_order_archived = wc_custom_order_table()->get_archive_post_type_name() === get_post_type($order_id);
+			var_dump('archived', $is_order_archived);
 			if ($is_order_archived) {
 				$order_types = wc_get_order_types( 'reports' );
 				set_post_type($order_id, $order_types);
