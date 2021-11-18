@@ -567,8 +567,9 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		$is_order_archived    = false;
 		$order_types          = wc_get_order_types('reports');
 		$order_type_effective = null;
+		$count                = 1;
 		foreach ($order_types as $order_type) {
-			$order_type_candidate = $order_type . '_archive';
+			$order_type_candidate = str_replace('shop', wc_custom_order_table()->get_archive_post_type_prefix(), $order_type , $count);
 			if (get_post_type($order_id) === $order_type_candidate) {
 				$is_order_archived    = true;
 				$order_type_effective = $order_type;
