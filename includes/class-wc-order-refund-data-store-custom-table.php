@@ -175,16 +175,14 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 		}
 	}
 
-	private function update_post_type(WC_Order $refund)
+	private function update_post_type(WC_Order_Refund $refund)
 	{
-		$order_type = $refund->get_type();
-		$order_archive_types = $order_type . wc_custom_order_table()->get_archive_post_type_sufix();
-		var_dump('test', $order_archive_types);
+		$order_type          = $refund->get_type();
+		$count               = 1;
+		$order_archive_types = str_replace('shop', wc_custom_order_table()->get_archive_post_type_prefix(), $order_type , $count);
 		if (false === post_type_exists($order_archive_types)) {
 			register_post_type($order_archive_types);
-			var_dump('test2');
 		}
-		var_dump('test3', set_post_type($refund->get_id(), $order_archive_types) ? 'true' : 'false');
 		return set_post_type($refund->get_id(), $order_archive_types);
 	}
 }

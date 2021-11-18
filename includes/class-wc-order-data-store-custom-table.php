@@ -470,8 +470,9 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	}
 
 	private function update_post_type(WC_Order &$order) {
-		$order_type = $order->get_type();
-		$order_archive_types = $order_type . wc_custom_order_table()->get_archive_post_type_sufix();
+		$order_type          = $order->get_type();
+		$count               = 1;
+		$order_archive_types = str_replace('shop', wc_custom_order_table()->get_archive_post_type_prefix(), $order_type , $count);
 		if (false === post_type_exists($order_archive_types)) {
 			register_post_type($order_archive_types);
 		}
