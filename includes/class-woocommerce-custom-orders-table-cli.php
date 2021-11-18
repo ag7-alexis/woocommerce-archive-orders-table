@@ -573,8 +573,8 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			if (get_post_type($order_id) === $order_type_candidate) {
 				$is_order_archived    = true;
 				$order_type_effective = $order_type;
+				break;
 			}
-			break;
 		}
 		if ($is_order_archived) {
 			set_post_type($order_id, $order_type_effective);
