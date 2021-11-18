@@ -499,17 +499,11 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		try {
 			$order = wc_get_order($order_id);
 			if (false === $order) {
-				throw new Exception("Can't find order with this id, trow exception to watch for archived order");
+				$order = $this->get_archived_order($order_id);
 			}
 		} catch (Exception $e) {
-			$is_order_archived = wc_custom_order_table()->get_archive_post_type_name() === get_post_type($order_id);
-			if ($is_order_archived) {
-				$order_types = wc_get_order_types('reports');
-				set_post_type($order_id, $order_types);
-				return $this->get_order($order_id);
-			}
+			$order = $this->get_archived_order($order_id);
 
-			$order = false;
 			WP_CLI::warning(
 				sprintf(
 					/* Translators: %1$d is the order ID, %2$s is the exception message. */
@@ -562,5 +556,20 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		return $wpdb->prepare( $query, $parameters );
+	}
+
+	/**
+	 * @param int $order_id
+	 * @return bool|WC_Abstract_Order
+	 */
+	protected function get_archived_order(int $order_id)
+	{
+		$is_order_archived = wc_custom_order_table()->get_archive_post_type_name() === get_post_type($order_id);
+		if ($is_order_archived) {
+			$order_types = wc_get_order_types('reports');
+			set_post_type($order_id, $order_types);
+			return $this->get_order($order_id);
+		}
+		return false;
 	}
 }
