@@ -154,12 +154,15 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 	 * @return WP_Error|null A WP_Error object if there was a problem populating the refund, or null
 	 *                       if there were no issues.
 	 */
-	public function populate_from_meta( &$refund, $delete = false ) {
+	public function populate_from_meta( &$refund, $delete = false, $hard_archive = false ) {
 		global $wpdb;
 
 		$refund = WooCommerce_Custom_Orders_Table::populate_order_from_post_meta( $refund );
 
 		$this->update_post_meta( $refund );
+		if (true === $hard_archive) {
+			$this->update_post_type($refund);
+		}
 
 		if ( $wpdb->last_error ) {
 			return new WP_Error( 'woocommerce-custom-order-table-migration', $wpdb->last_error );
@@ -170,5 +173,15 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 				delete_post_meta( $refund->get_id(), $meta_key );
 			}
 		}
+	}
+
+	private function update_post_type(WC_Order $refund)
+	{
+		$order_type = $refund->get_type();
+		$order_archive_types = $order_type . wc_custom_order_table()->get_archive_post_type_sufix();
+		if (false === post_type_exists($order_archive_types)) {
+			register_post_type($order_archive_types);
+		}
+		return set_post_type($refund->get_id(), $order_archive_types);
 	}
 }

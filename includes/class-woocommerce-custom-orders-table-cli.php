@@ -502,7 +502,6 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			if (false === $order) {
 				$order = $this->get_archived_order($order_id);
 			}
-			var_dump('order', $order ? 'o true' : 'o false');
 		} catch (Exception $e) {
 			$order = $this->get_archived_order($order_id);
 
@@ -570,10 +569,10 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		$order_types          = wc_get_order_types('reports');
 		$order_type_effective = null;
 		foreach ($order_types as $order_type) {
-			$order_type_candidate = $order_type . wc_custom_order_table()->get_archive_post_type_name();
+			$order_type_candidate = $order_type . wc_custom_order_table()->get_archive_post_type_sufix();
 			if (get_post_type($order_id) === $order_type_candidate) {
 				$is_order_archived    = true;
-				$order_type_effective = $order_type_candidate;
+				$order_type_effective = $order_type;
 			}
 			break;
 		}
