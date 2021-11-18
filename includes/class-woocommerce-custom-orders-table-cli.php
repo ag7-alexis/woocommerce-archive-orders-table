@@ -450,7 +450,6 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		while ( $order_query->valid() ) {
 
 			$order = $this->get_order( $order_query->current()->order_id );
-			var_dump('ztezt ', $order ? 'true' :'false');
 
 			if ( $order ) {
 				WooCommerce_Custom_Orders_Table::migrate_to_post_meta( $order, $assoc_args['delete-custom-orders'] );
@@ -569,8 +568,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		$order_types          = wc_get_order_types('reports');
 		$order_type_effective = null;
 		foreach ($order_types as $order_type) {
-			$count               = 1;
-			$order_type_candidate = str_replace('shop', wc_custom_order_table()->get_archive_post_type_prefix(), $order_type , $count);
+			$order_type_candidate = $order_type . '_archive';
 			if (get_post_type($order_id) === $order_type_candidate) {
 				$is_order_archived    = true;
 				$order_type_effective = $order_type;
